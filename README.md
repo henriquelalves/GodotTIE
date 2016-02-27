@@ -22,3 +22,15 @@ You'll need the Godot Engine to do this.
 3. Instance "text_interface_engine.scn" as a node in the scene that you want the Text Interface.
 
 Done!
+
+## Updates:
+
+* 26/02:
+	* Changed the "buffs" to dictionaries, to increase readability.
+	* Fixed bug with "tag" signals (should only call it once).
+* 25/02:
+	* Setup of the finished project on GitHub.
+
+## License:
+
+MIT License.

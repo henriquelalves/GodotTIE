@@ -1,6 +1,6 @@
 #MADE BY HENRIQUE ALVES
-#ALL RIGHTS RESERVED BLABLABLA
-#Its MIT licensed
+#LICENSE STUFF BLABLABLA
+#(MIT License)
 
 # Intern initializations
 extends ReferenceFrame # Extends from ReferenceFrame
@@ -10,6 +10,12 @@ const _ARRAY_CHARS = [" ","!","\"","#","$","%","&","'","(",")","*","+",",","-","
 const STATE_WAITING = 0
 const STATE_OUTPUT = 1
 const STATE_INPUT = 2
+
+const BUFF_DEBUG = 0
+const BUFF_TEXT = 1
+const BUFF_SILENCE = 2
+const BUFF_BREAK = 3
+const BUFF_INPUT = 4
 
 onready var _buffer = [] # 0 = Debug; 1 = Text; 2 = Silence; 3 = Break; 4 = Input
 onready var _label = get_node("_label") # The Label in which the text is going to be displayed
@@ -43,20 +49,40 @@ export(bool) var BLINKING_INPUT = true # If there is a _ blinking when input is 
 export(int) var INPUT_CHARACTERS_LIMIT = -1 # If -1, there'll be no limits in the number of characters
 # ===============================================
 
-func buff_debug(f, lab = false, arg0 = null): # For simple debug purposes; use with care
-	_buffer.append([0, f, lab, arg0])
+func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple debug purposes; use with care
+	var b = {"buff_type":BUFF_DEBUG,"debug_function":f,"debug_label":lab,"debug_arg":arg0}
+	if(! push_front):
+		_buffer.append(b)
+	else:
+		_buffer.push_front(b)
 
-func buff_text(text, vel = 0, tag = ""): # The text for the output, and its printing velocity (per character)
-	_buffer.append([1, text, vel, tag])
+func buff_text(text, vel = 0, tag = "", push_front = false): # The text for the output, and its printing velocity (per character)
+	var b = {"buff_type":BUFF_TEXT, "buff_text":text, "buff_vel":vel, "buff_tag":tag}
+	if !push_front:
+		_buffer.append(b)
+	else:
+		_buffer.push_front(b)
 
-func buff_silence(len, tag = ""): # A duration without output
-	_buffer.append([2, len, tag])
+func buff_silence(len, tag = "", push_front = false): # A duration without output
+	var b = {"buff_type":BUFF_SILENCE, "buff_length":len, "buff_tag":tag}
+	if !push_front:
+		_buffer.append(b)
+	else:
+		_buffer.push_front(b)
 
-func buff_break(tag = ""): # Stop output until the player hits enter
-	_buffer.append([3, tag])
+func buff_break(tag = "", push_front = false): # Stop output until the player hits enter
+	var b = {"buff_type":BUFF_BREAK, "buff_tag":tag}
+	if !push_front:
+		_buffer.append(b)
+	else:
+		_buffer.push_front(b)
 
-func buff_input(tag = ""): # 'Schedule' a change state to Input in the buffer
-	_buffer.append([4, tag])
+func buff_input(tag = "", push_front = false): # 'Schedule' a change state to Input in the buffer
+	var b = {"buff_type":BUFF_INPUT, "buff_tag":tag}
+	if !push_front:
+		_buffer.append(b)
+	else:
+		_buffer.push_front(b)
 
 func clear_text(): # Deletes ALL the text on the label
 	_label.set_lines_skipped(0)
@@ -148,71 +174,78 @@ func _fixed_process(delta):
 		
 		var o = _buffer[0] # Calling this var 'o' was one of my biggest mistakes during the development of this code. I'm sorry about this.
 		
-		if (o[0] == 0): # ---- It's a debug! ----
-			if(o[2] == false):
-				if(o[3] == null):
-					print(self.call(o[1]))
+		if (o["buff_type"] == BUFF_DEBUG): # ---- It's a debug! ----
+			if(o["debug_label"] == false):
+				if(o["debug_arg"] == null):
+					print(self.call(o["debug_function"]))
 				else:
-					print(self.call(o[1],o[3]))
+					print(self.call(o["debug_function"],o["debug_arg"]))
 			else:
-				if(o[3] == null):
-					print(_label.call(o[1]))
+				if(o["debug_arg"] == null):
+					print(_label.call(o["debug_function"]))
 				else:
-					print(_label.call(o[1],o[3]))
+					print(_label.call(o["debug_function"],o["debug_arg"]))
 			_buffer.pop_front()
-		elif (o[0] == 1): # ---- It's a text! ----
+		elif (o["buff_type"] == BUFF_TEXT): # ---- It's a text! ----
 			# -- Print Text --
 			
-			if(o[3] != ""):
-				emit_signal("tag_buff", o[3])
+			if(o["buff_tag"] != "" and _buff_beginning == true):
+				emit_signal("tag_buff", o["buff_tag"])
 			
 			if (_turbo): # In case of turbo, print everything on this buff
-				o[2] = 0
+				o["buff_vel"] = 0
 			
-			if(o[2] == 0): # If the velocity is 0, than just print everything
-				while(o[1] != ""): # Not optimal (not really printing everything at the same time); but is the only way to work with line break
-					if(AUTO_SKIP_WORDS and (o[1][0] == " " or _buff_beginning)):
+			if(o["buff_vel"] == 0): # If the velocity is 0, than just print everything
+				while(o["buff_text"] != ""): # Not optimal (not really printing everything at the same time); but is the only way to work with line break
+					if(AUTO_SKIP_WORDS and (o["buff_text"][0] == " " or _buff_beginning)):
 						_skip_word()
-					_label_print(o[1][0])
+					_label_print(o["buff_text"][0])
 					_buff_beginning = false
-					o[1] = o[1].right(1)
+					o["buff_text"] = o["buff_text"].right(1)
 					if(_max_lines_reached == true):
 						break
 					
 			else: # Else, print each character according to velocity
-				_output_delay_limit = o[2]
-				_output_delay += delta
+				_output_delay_limit = o["buff_vel"]
+				if(_buff_beginning):
+					_output_delay = _output_delay_limit + delta
+				else:
+					_output_delay += delta
 				if(_output_delay > _output_delay_limit):
-					if(AUTO_SKIP_WORDS and (o[1][0] == " " or _buff_beginning)):
+					if(AUTO_SKIP_WORDS and (o["buff_text"][0] == " " or _buff_beginning)):
 						_skip_word()
-					_label_print(o[1][0])
+					_label_print(o["buff_text"][0])
 					_buff_beginning = false
 					_output_delay -= _output_delay_limit
-					o[1] = o[1].right(1)
+					o["buff_text"] = o["buff_text"].right(1)
 			# -- Popout Buff --
-			if (o[1] == ""): # This buff finished, so pop it out of the array
+			if (o["buff_text"] == ""): # This buff finished, so pop it out of the array
 				_buffer.pop_front()
 				_buff_beginning = true
 				_output_delay = 0
-		elif (o[0] == 2): # ---- It's a silence! ----
-			if(o[2] != ""):
-				emit_signal("tag_buff", o[2])
-			_output_delay_limit = o[1] # Length of the silence
+		elif (o["buff_type"] == BUFF_SILENCE): # ---- It's a silence! ----
+			if(o["buff_tag"] != "" and _buff_beginning == true):
+				emit_signal("tag_buff", o["buff_tag"])
+				_buff_beginning = false
+			_output_delay_limit = o["buff_length"] # Length of the silence
 			_output_delay += delta
 			if(_output_delay > _output_delay_limit):
 				_output_delay = 0
+				_buff_beginning = true
 				_buffer.pop_front()
-		elif (o[0] == 3): # ---- It's a break! ----
-			if(o[1] != ""):
-				emit_signal("tag_buff", o[1])
+		elif (o["buff_type"] == BUFF_BREAK): # ---- It's a break! ----
+			if(o["buff_tag"] != "" and _buff_beginning == true):
+				emit_signal("tag_buff", o["buff_tag"])
+				_buff_beginning = false
 			if(_turbo): # Ignore this break
 				_buffer.pop_front()
 			elif(!_on_break):
 				emit_signal("enter_break")
 				_on_break = true
-		elif (o[0] == 4): # ---- It's an Input! ----
-			if(o[1] != ""):
-				emit_signal("tag_buff", o[1])
+		elif (o["buff_type"] == BUFF_INPUT): # ---- It's an Input! ----
+			if(o["buff_tag"] != ""and _buff_beginning == true):
+				emit_signal("tag_buff", o["buff_tag"])
+				_buff_beginning = false
 			set_state(STATE_INPUT)
 			_buffer.pop_front()
 	elif(_state == STATE_INPUT):
@@ -306,7 +339,7 @@ func _has_to_skip_word(word): # what an awful name
 	return ret
 
 func _skip_word():
-	var ot = _buffer[0][1]
+	var ot = _buffer[0]["buff_text"]
 	
 	# which comes first, a space or a new line (else, till the end)
 	var f_space = ot.findn(" ",1)
@@ -319,11 +352,11 @@ func _skip_word():
 	
 	if(_has_to_skip_word(ot.substr(0,len))):
 		
-		if(_buffer[0][1][0] == " "):
+		if(_buffer[0]["buff_text"][0] == " "):
 			
-			_buffer[0][1][0] = "\n"
+			_buffer[0]["buff_text"][0] = "\n"
 		else:
-			_buffer[0][1] = _buffer[0][1].insert(0,"\n")
+			_buffer[0]["buff_text"] = _buffer[0]["buff_text"].insert(0,"\n")
 
 func _label_print(t): # Add text to the label
 	var n = _label.get_line_count()
@@ -338,8 +371,8 @@ func _label_print(t): # Add text to the label
 			if(_state == 1 and BREAK_ON_MAX_LINES and _max_lines_reached == false): # Add a break when maximum lines are reached
 				_delete_last_character()
 				_max_lines_reached = true
-				_buffer[0][1] = t + _buffer[0][1]
-				_buffer.push_front([3,""])
+				_buffer[0]["buff_text"] = t + _buffer[0]["buff_text"]
+				buff_break("", true)
 				return t
 			
 			if(_max_lines_reached): # Reset maximum lines break
