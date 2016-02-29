@@ -21,6 +21,13 @@ You'll need the Godot Engine to do this.
 2. Copy the folder "Text Interface Engine" to your Godot project;
 3. Instance "text_interface_engine.scn" as a node in the scene that you want the Text Interface.
 
+The "addon" is a experimental feature (as it is only available in Godot HEAD version on GitHub for now).
+To use GodotTIE as an Addon:
+
+1. Copy the "addons" folder to your project.
+2. Enable GodotTIE addon on "Project Settings".
+3. Instance a TextInterfaceEngine node to your scene.
+
 Done!
 
 ## Updates:
