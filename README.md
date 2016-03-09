@@ -3,6 +3,8 @@ A simple Text Interface Engine to control text output (like in a RPG dialogue) f
 
 The "Cave-Story" font was created by enigmansmp1824; it's CC-BY-SA licensed, and can be found in https://fontlibrary.org/pt/font/cave-story.
 
+A simple demonstration video: https://www.youtube.com/watch?v=fkd-nIIPxVw
+
 ## Features:
 
 * Control the velocity in which the text is going to be displayed! (Even text dialogues can have emotions!)
