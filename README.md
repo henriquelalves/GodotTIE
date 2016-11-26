@@ -34,6 +34,8 @@ Done!
 
 ## Updates:
 
+* 26/11:
+	* Corrected bug with "set_buff_speed". Thanks David Paiva!
 * 26/02:
 	* Changed the "buffs" to dictionaries, to increase readability.
 	* Fixed bug with "tag" signals (should only call it once).
