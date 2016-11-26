@@ -62,7 +62,6 @@ func _on_input_enter(s):
 	
 	tie.add_newline()
 	tie.buff_text("Oooh, so your name is " + s + "? What a beautiful name!", 0.01)
-	
 	pass
 
 func _on_buff_end():
