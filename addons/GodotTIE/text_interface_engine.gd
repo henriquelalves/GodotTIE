@@ -116,11 +116,15 @@ func get_text(): # Get current text on Label
 func set_turbomode(s): # Print stuff in the maximum velocity and ignore breaks
 	_turbo = s;
 
+# Careful when changing fonts on-the-fly! It might break the text if there is something
+# already printed!
 func set_font_bypath(str_path): # Changes the font of the text; weird stuff will happen if you use this function after text has been printed
 	_label.add_font_override("font",load(str_path))
+	_max_lines = floor(get_size().y/_label.get_line_height())
 
 func set_font_byresource(font): # Changes font of the text (uses the resource)
 	_label.add_font_override("font", font)
+	_max_lines = floor(get_size().y/_label.get_line_height())
 
 func set_color(c): # Changes the color of the text
 	_label.add_color_override("font_color", c)
@@ -137,8 +141,8 @@ func set_break_key_by_scancode(i): # Set a new key to resume breaks (uses scanco
 	_break_key = i
 
 func set_buff_speed(v): # Changes the velocity of the text being printed
-	if (_buffer[0][0] == 1):
-		_buffer[0][2] = v
+	if (_buffer[0]["buff_type"] == BUFF_TEXT):
+		_buffer[0]["buff_vel"] = v
 
 # ==============================================
 # Reserved methods
@@ -156,7 +160,6 @@ func _ready():
 	
 	# Setting size of the frame
 	_max_lines = floor(get_size().y/_label.get_line_height())
-	print(get_size())
 	_label.set_size(Vector2(get_size().x,get_size().y))
 	_label.set_autowrap(true)
 	

@@ -19,11 +19,6 @@ Take a look at the 'public' methods in the script and the export variables avail
 ## Installation:
 You'll need the Godot Engine to do this.
 
-1. Clone or download this repository;
-2. Copy the folder "Text Interface Engine" to your Godot project;
-3. Instance "text_interface_engine.scn" as a node in the scene that you want the Text Interface.
-
-The "addon" is a experimental feature (as it is only available in Godot HEAD version on GitHub for now).
 To use GodotTIE as an Addon:
 
 1. Copy the "addons" folder to your project.
@@ -34,6 +29,9 @@ Done!
 
 ## Updates:
 
+* 08/12:
+	* Font-overriding bug (max_lines) corrected by David Paiva!
+	* Since Addons on Godot are gold since v.2.0, I deleted the old GodotTIE folder to make the addon easier to understand and install - also updated the project Icon and scene file.
 * 26/11:
 	* Corrected bug with "set_buff_speed". Thanks David Paiva!
 * 26/02:
