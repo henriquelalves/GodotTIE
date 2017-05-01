@@ -47,6 +47,13 @@ export(Font) var FONT
 export(bool) var PRINT_INPUT = true # If the input is going to be printed
 export(bool) var BLINKING_INPUT = true # If there is a _ blinking when input is appropriate
 export(int) var INPUT_CHARACTERS_LIMIT = -1 # If -1, there'll be no limits in the number of characters
+# Signals!
+signal input_enter(input) # When user finished an input
+signal buff_end() # When there is no more outputs in _buffer
+signal state_change(state) # When the state of the engine changes
+signal enter_break() # When the engine stops on a break
+signal resume_break() # When the engine resumes from a break
+signal tag_buff(tag) # When the _buffer reaches a buff which is tagged
 # ===============================================
 
 func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple debug purposes; use with care
@@ -162,13 +169,6 @@ func _ready():
 	_max_lines = floor(get_size().y/_label.get_line_height())
 	_label.set_size(Vector2(get_size().x,get_size().y))
 	_label.set_autowrap(true)
-	
-	add_user_signal("input_enter",[{"input":TYPE_STRING}]) # When user finished an input
-	add_user_signal("buff_end") # When there is no more outputs in _buffer
-	add_user_signal("state_change",[{"state":TYPE_INT}]) # When the state of the engine changes
-	add_user_signal("enter_break") # When the engine stops on a break
-	add_user_signal("resume_break") # When the engine resumes from a break
-	add_user_signal("tag_buff",[{"tag":TYPE_STRING}]) # When the _buffer reaches a buff which is tagged
 
 func _fixed_process(delta):
 	if(_state == STATE_OUTPUT): # Output
