@@ -28,16 +28,17 @@ To use GodotTIE as an Addon:
 Done!
 
 ## Updates:
-
-* 08/12:
+* 30/04/17:
+	* Merged radicaled pull-request: Changed add_user_signal to signal keyword.
+* 08/12/16:
 	* Font-overriding bug (max_lines) corrected by David Paiva!
 	* Since Addons on Godot are gold since v.2.0, I deleted the old GodotTIE folder to make the addon easier to understand and install - also updated the project Icon and scene file.
-* 26/11:
+* 26/11/16:
 	* Corrected bug with "set_buff_speed". Thanks David Paiva!
-* 26/02:
+* 26/02/16:
 	* Changed the "buffs" to dictionaries, to increase readability.
 	* Fixed bug with "tag" signals (should only call it once).
-* 25/02:
+* 25/02/16:
 	* Setup of the finished project on GitHub.
 
 ## License:
