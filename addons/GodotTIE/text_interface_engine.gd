@@ -16,6 +16,7 @@ const BUFF_TEXT = 1
 const BUFF_SILENCE = 2
 const BUFF_BREAK = 3
 const BUFF_INPUT = 4
+const BUFF_CLEAR = 5
 
 onready var _buffer = [] # 0 = Debug; 1 = Text; 2 = Silence; 3 = Break; 4 = Input
 onready var _label = Label.new() # The Label in which the text is going to be displayed
@@ -54,6 +55,7 @@ signal state_change(state) # When the state of the engine changes
 signal enter_break() # When the engine stops on a break
 signal resume_break() # When the engine resumes from a break
 signal tag_buff(tag) # When the _buffer reaches a buff which is tagged
+signal buff_cleared() # When the buffer's been cleared of text
 # ===============================================
 
 func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple debug purposes; use with care
@@ -86,6 +88,13 @@ func buff_break(tag = "", push_front = false): # Stop output until the player hi
 
 func buff_input(tag = "", push_front = false): # 'Schedule' a change state to Input in the buffer
 	var b = {"buff_type":BUFF_INPUT, "buff_tag":tag}
+	if !push_front:
+		_buffer.append(b)
+	else:
+		_buffer.push_front(b)
+		
+func buff_clear(tag = "", push_front = false): # Clear the text buffer when this buffer command is run.
+	var b = {"buff_type":BUFF_CLEAR, "buff_tag":tag}
 	if !push_front:
 		_buffer.append(b)
 	else:
@@ -253,6 +262,13 @@ func _fixed_process(delta):
 				_buff_beginning = false
 			set_state(STATE_INPUT)
 			_buffer.pop_front()
+		elif (o["buff_type"] == BUFF_CLEAR): # ---- It's a clear command! ----
+			if(o["buff_tag"] != ""and _buff_beginning == true):
+				emit_signal("tag_buff", o["buff_tag"])
+				_buff_beginning = false
+			_label.set_text("")
+			_buffer.pop_front()
+			emit_signal("buff_cleared")
 	elif(_state == STATE_INPUT):
 		if BLINKING_INPUT:
 			_blink_input_timer += delta
