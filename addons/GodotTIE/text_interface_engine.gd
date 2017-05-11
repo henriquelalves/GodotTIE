@@ -16,6 +16,7 @@ const BUFF_TEXT = 1
 const BUFF_SILENCE = 2
 const BUFF_BREAK = 3
 const BUFF_INPUT = 4
+const BUFF_CLEAR = 5
 
 onready var _buffer = [] # 0 = Debug; 1 = Text; 2 = Silence; 3 = Break; 4 = Input
 onready var _label = Label.new() # The Label in which the text is going to be displayed
@@ -47,6 +48,14 @@ export(Font) var FONT
 export(bool) var PRINT_INPUT = true # If the input is going to be printed
 export(bool) var BLINKING_INPUT = true # If there is a _ blinking when input is appropriate
 export(int) var INPUT_CHARACTERS_LIMIT = -1 # If -1, there'll be no limits in the number of characters
+# Signals!
+signal input_enter(input) # When user finished an input
+signal buff_end() # When there is no more outputs in _buffer
+signal state_change(state) # When the state of the engine changes
+signal enter_break() # When the engine stops on a break
+signal resume_break() # When the engine resumes from a break
+signal tag_buff(tag) # When the _buffer reaches a buff which is tagged
+signal buff_cleared() # When the buffer's been cleared of text
 # ===============================================
 
 func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple debug purposes; use with care
@@ -79,6 +88,13 @@ func buff_break(tag = "", push_front = false): # Stop output until the player hi
 
 func buff_input(tag = "", push_front = false): # 'Schedule' a change state to Input in the buffer
 	var b = {"buff_type":BUFF_INPUT, "buff_tag":tag}
+	if !push_front:
+		_buffer.append(b)
+	else:
+		_buffer.push_front(b)
+		
+func buff_clear(tag = "", push_front = false): # Clear the text buffer when this buffer command is run.
+	var b = {"buff_type":BUFF_CLEAR, "buff_tag":tag}
 	if !push_front:
 		_buffer.append(b)
 	else:
@@ -162,13 +178,6 @@ func _ready():
 	_max_lines = floor(get_size().y/_label.get_line_height())
 	_label.set_size(Vector2(get_size().x,get_size().y))
 	_label.set_autowrap(true)
-	
-	add_user_signal("input_enter",[{"input":TYPE_STRING}]) # When user finished an input
-	add_user_signal("buff_end") # When there is no more outputs in _buffer
-	add_user_signal("state_change",[{"state":TYPE_INT}]) # When the state of the engine changes
-	add_user_signal("enter_break") # When the engine stops on a break
-	add_user_signal("resume_break") # When the engine resumes from a break
-	add_user_signal("tag_buff",[{"tag":TYPE_STRING}]) # When the _buffer reaches a buff which is tagged
 
 func _fixed_process(delta):
 	if(_state == STATE_OUTPUT): # Output
@@ -253,6 +262,13 @@ func _fixed_process(delta):
 				_buff_beginning = false
 			set_state(STATE_INPUT)
 			_buffer.pop_front()
+		elif (o["buff_type"] == BUFF_CLEAR): # ---- It's a clear command! ----
+			if(o["buff_tag"] != ""and _buff_beginning == true):
+				emit_signal("tag_buff", o["buff_tag"])
+				_buff_beginning = false
+			_label.set_text("")
+			_buffer.pop_front()
+			emit_signal("buff_cleared")
 	elif(_state == STATE_INPUT):
 		if BLINKING_INPUT:
 			_blink_input_timer += delta
