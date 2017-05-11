@@ -28,6 +28,8 @@ To use GodotTIE as an Addon:
 Done!
 
 ## Updates:
+* 10/05/17:
+	* Merged radicaled pull-request: Added "buff_clear" as a new buff to reset the text.
 * 30/04/17:
 	* Merged radicaled pull-request: Changed add_user_signal to signal keyword.
 * 08/12/16:
