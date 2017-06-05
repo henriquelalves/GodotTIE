@@ -17,8 +17,9 @@ const BUFF_SILENCE = 2
 const BUFF_BREAK = 3
 const BUFF_INPUT = 4
 const BUFF_CLEAR = 5
+const BUFF_SIGNAL = 6
 
-onready var _buffer = [] # 0 = Debug; 1 = Text; 2 = Silence; 3 = Break; 4 = Input
+onready var _buffer = [] # 0 = Debug; 1 = Text; 2 = Silence; 3 = Break; 4 = Input; 5 = Clear; 6 = Signal;
 onready var _label = Label.new() # The Label in which the text is going to be displayed
 onready var _state = 0 # 0 = Waiting; 1 = Output; 2 = Input
 
@@ -56,6 +57,7 @@ signal enter_break() # When the engine stops on a break
 signal resume_break() # When the engine resumes from a break
 signal tag_buff(tag) # When the _buffer reaches a buff which is tagged
 signal buff_cleared() # When the buffer's been cleared of text
+signal custom_message(message) # When buff_signal(message) is current output in _buffer
 # ===============================================
 
 func buff_debug(f, lab = false, arg0 = null, push_front = false): # For simple debug purposes; use with care
@@ -95,6 +97,13 @@ func buff_input(tag = "", push_front = false): # 'Schedule' a change state to In
 		
 func buff_clear(tag = "", push_front = false): # Clear the text buffer when this buffer command is run.
 	var b = {"buff_type":BUFF_CLEAR, "buff_tag":tag}
+	if !push_front:
+		_buffer.append(b)
+	else:
+		_buffer.push_front(b)
+
+func buff_signal(message, tag = "", push_front = false): # Emit a signal with a custom message when this buffer appears in the stack
+	var b = {"buff_type":BUFF_SIGNAL, "buff_message":message, "buff_tag":tag}
 	if !push_front:
 		_buffer.append(b)
 	else:
@@ -269,6 +278,15 @@ func _fixed_process(delta):
 			_label.set_text("")
 			_buffer.pop_front()
 			emit_signal("buff_cleared")
+		elif (o["buff_type"] == BUFF_SIGNAL): # ---- It's a Signal! ----
+			if(o["buff_tag"] != "" and _buff_beginning == true):
+				emit_signal("tag_buff", o["buff_tag"])
+				_buff_beginning = false
+			emit_signal("custom_message", o["buff_message"])
+			_buffer.pop_front()
+			_buff_beginning = true
+
+
 	elif(_state == STATE_INPUT):
 		if BLINKING_INPUT:
 			_blink_input_timer += delta
