@@ -28,6 +28,8 @@ To use GodotTIE as an Addon:
 Done!
 
 ## Updates:
+* 10/10/17:
+	* Corrected Issue of last lines not appearing on very large texts.
 * 10/05/17:
 	* Merged radicaled pull-request: Added "buff_clear" as a new buff to reset the text.
 * 30/04/17:
