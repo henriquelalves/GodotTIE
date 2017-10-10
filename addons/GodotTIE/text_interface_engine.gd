@@ -136,11 +136,11 @@ func set_turbomode(s): # Print stuff in the maximum velocity and ignore breaks
 # already printed!
 func set_font_bypath(str_path): # Changes the font of the text; weird stuff will happen if you use this function after text has been printed
 	_label.add_font_override("font",load(str_path))
-	_max_lines = floor(get_size().y/_label.get_line_height())
+	_max_lines = floor(get_size().y/(_label.get_line_height()+_label.get_constant("line_spacing")))
 
 func set_font_byresource(font): # Changes font of the text (uses the resource)
 	_label.add_font_override("font", font)
-	_max_lines = floor(get_size().y/_label.get_line_height())
+	_max_lines = floor(get_size().y/(_label.get_line_height()+_label.get_constant("line_spacing")))
 
 func set_color(c): # Changes the color of the text
 	_label.add_color_override("font_color", c)
@@ -175,7 +175,7 @@ func _ready():
 		_label.add_font_override("font", FONT)
 	
 	# Setting size of the frame
-	_max_lines = floor(get_size().y/_label.get_line_height())
+	_max_lines = floor(get_size().y/(_label.get_line_height()+_label.get_constant("line_spacing")))
 	_label.set_size(Vector2(get_size().x,get_size().y))
 	_label.set_autowrap(true)
 

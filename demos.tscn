@@ -16,7 +16,10 @@ margin/top = -1.0
 margin/right = 1024.0
 margin/bottom = 599.0
 script/script = ExtResource( 1 )
-__meta__ = { "__editor_plugin_screen__":"2D", "_edit_lock_":true }
+__meta__ = {
+"__editor_plugin_screen__": "2D",
+"_edit_lock_": true
+}
 
 [node name="panel" type="Panel" parent="."]
 
@@ -27,7 +30,7 @@ size_flags/vertical = 2
 margin/left = 314.0
 margin/top = 151.0
 margin/right = 684.0
-margin/bottom = 414.0
+margin/bottom = 429.0
 
 [node name="text_interface_engine" type="ReferenceFrame" parent="panel"]
 
@@ -38,9 +41,11 @@ size_flags/vertical = 2
 margin/left = 3.0
 margin/top = 3.0
 margin/right = 367.0
-margin/bottom = 259.0
+margin/bottom = 275.0
 script/script = ExtResource( 2 )
-__meta__ = { "_editor_icon":ExtResource( 3 ) }
+__meta__ = {
+"_editor_icon": ExtResource( 3 )
+}
 SCROLL_ON_MAX_LINES = true
 BREAK_ON_MAX_LINES = true
 AUTO_SKIP_WORDS = true
