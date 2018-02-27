@@ -27,6 +27,8 @@ To use GodotTIE as an Addon:
 
 Done!
 
+**Warning**: This main plugin is not compatible with Godot (v3.x) (check issue #7 for now).
+
 ## Updates:
 * 10/10/17:
 	* Corrected Issue of last lines not appearing on very large texts.
