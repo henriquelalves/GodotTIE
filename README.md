@@ -31,6 +31,9 @@ To use GodotTIE as an Addon:
 Done!
 
 ## Updates:
+* 13/03/18:
+	* Merged dalton5000 pull-request: Added Godot 3.x compatibility!
+	* Added new branch for Godot 2.x version of the addon.
 * 10/10/17:
 	* Corrected Issue of last lines not appearing on very large texts.
 * 10/05/17:
