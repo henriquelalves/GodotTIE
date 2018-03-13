@@ -5,6 +5,10 @@ The "Cave-Story" font was created by enigmansmp1824; it's CC-BY-SA licensed, and
 
 A simple demonstration video: https://www.youtube.com/watch?v=fkd-nIIPxVw
 
+## Compatibility
+
+This is the Godot v2.x version of the plugin; for Godot v3.x compatibility, check the `master` branch.
+
 ## Features:
 
 * Control the velocity in which the text is going to be displayed! (Even text dialogues can have emotions!)
