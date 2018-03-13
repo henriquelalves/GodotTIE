@@ -5,6 +5,9 @@ The "Cave-Story" font was created by enigmansmp1824; it's CC-BY-SA licensed, and
 
 A simple demonstration video: https://www.youtube.com/watch?v=fkd-nIIPxVw
 
+## Compatibility
+This is the Godot v3.x version of the plugin; for Godot v2.x compatibility, check the `Godot_v2.x` branch. 
+
 ## Features:
 
 * Control the velocity in which the text is going to be displayed! (Even text dialogues can have emotions!)
@@ -26,8 +29,6 @@ To use GodotTIE as an Addon:
 3. Instance a TextInterfaceEngine node to your scene.
 
 Done!
-
-**Warning**: This main plugin is not compatible with Godot (v3.x) (check issue #7 for now).
 
 ## Updates:
 * 10/10/17:
