@@ -3,7 +3,7 @@
 #(MIT License)
 
 # Intern initializations
-extends ReferenceFrame # Extends from ReferenceFrame
+extends ReferenceRect # Extends from ReferenceFrame
 
 const _ARRAY_CHARS = [" ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~"]
 
@@ -29,7 +29,7 @@ onready var _max_lines_reached = false
 onready var _buff_beginning = true
 onready var _turbo = false
 onready var _max_lines = 0
-onready var _break_key = KEY_RETURN
+onready var _break_key = KEY_ENTER
 
 onready var _blink_input_visible = false
 onready var _blink_input_timer = 0
@@ -72,8 +72,8 @@ func buff_text(text, vel = 0, tag = "", push_front = false): # The text for the 
 	else:
 		_buffer.push_front(b)
 
-func buff_silence(len, tag = "", push_front = false): # A duration without output
-	var b = {"buff_type":BUFF_SILENCE, "buff_length":len, "buff_tag":tag}
+func buff_silence(length, tag = "", push_front = false): # A duration without output
+	var b = {"buff_type":BUFF_SILENCE, "buff_length":length, "buff_tag":tag}
 	if !push_front:
 		_buffer.append(b)
 	else:
@@ -165,7 +165,7 @@ func set_buff_speed(v): # Changes the velocity of the text being printed
 
 # Override
 func _ready():
-	set_fixed_process(true)
+	set_physics_process(true)
 	set_process_input(true)
 	
 	add_child(_label)
@@ -179,7 +179,7 @@ func _ready():
 	_label.set_size(Vector2(get_size().x,get_size().y))
 	_label.set_autowrap(true)
 
-func _fixed_process(delta):
+func _physics_process(delta):
 	if(_state == STATE_OUTPUT): # Output
 		if(_buffer.size() == 0):
 			set_state(STATE_WAITING)
@@ -279,7 +279,7 @@ func _fixed_process(delta):
 	pass
 
 func _input(event):
-	if(event.type == InputEvent.KEY and event.is_pressed() == true ):
+	if(event is InputEventKey and event.is_pressed() == true ):
 		if(SCROLL_SKIPPED_LINES and event.scancode == KEY_UP or event.scancode == KEY_DOWN): # User is just scrolling the text
 			if(event.scancode == KEY_UP):
 				if(_label.get_lines_skipped() > 0):
@@ -301,7 +301,7 @@ func _input(event):
 
 			if(event.scancode == KEY_BACKSPACE): # Delete last character
 				_delete_last_character(true)
-			elif(event.scancode == KEY_RETURN): # Finish input
+			elif(event.scancode == KEY_ENTER): # Finish input
 				emit_signal("input_enter", input)
 				if(!PRINT_INPUT): # Delete input
 					var i = _label.get_text().length() - _input_index
@@ -369,9 +369,9 @@ func _skip_word():
 	var f_newline = ot.findn("\n",1)
 	if f_newline == -1:
 		f_newline = ot.length()
-	var len = min(f_space, f_newline)
+	var length = min(f_space, f_newline)
 	
-	if(_has_to_skip_word(ot.substr(0,len))):
+	if(_has_to_skip_word(ot.substr(0,length))):
 		
 		if(_buffer[0]["buff_text"][0] == " "):
 			
