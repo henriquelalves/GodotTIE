@@ -31,6 +31,10 @@ To use GodotTIE as an Addon:
 Done!
 
 ## Updates:
+* 17/05/20:
+	* Merged jacopofar pull-request: Allow arbitraty Unicode I/O
+	* Merged aaronfranke pull-request: Update gitignore
+	* Rearrenged files so it's easier to download the plugin from Godot AssetLib.
 * 13/03/18:
 	* Merged dalton5000 pull-request: Added Godot 3.x compatibility!
 	* Added new branch for Godot 2.x version of the addon.
