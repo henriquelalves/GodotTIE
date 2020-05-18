@@ -6,12 +6,17 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=3
+config_version=4
+
+_global_script_classes=[  ]
+_global_script_class_icons={
+
+}
 
 [application]
 
 config/name="GodotTIE"
-run/main_scene="res://demos.tscn"
+run/main_scene="res://demo/demos.tscn"
 config/icon="res://icon.png"
 
 [editor_plugins]

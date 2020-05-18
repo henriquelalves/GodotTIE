@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://addons/GodotTIE/text_interface_engine.gd" type="Script" id=1]
+[ext_resource path="res://addons/GodotTIE/GodotTIE_icon.png" type="Texture" id=2]
+[ext_resource path="res://demo/main.gd" type="Script" id=3]
+
+[sub_resource type="DynamicFontData" id=1]
+font_path = "res://demo/Cave-Story.ttf"
+
+[sub_resource type="DynamicFont" id=2]
+size = 38
+font_data = SubResource( 1 )
+
+[node name="Demo" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+__meta__ = {
+"__editor_plugin_screen__": "2D",
+"_edit_lock_": true
+}
+
+[node name="panel" type="Panel" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -256.0
+margin_top = -150.0
+margin_right = 256.0
+margin_bottom = 150.0
+rect_min_size = Vector2( 512, 300 )
+
+[node name="text_interface_engine" type="ReferenceRect" parent="panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_icon": ExtResource( 2 )
+}
+FONT = SubResource( 2 )
+
+[node name="demos_list" type="OptionButton" parent="."]
+toggle_mode = false
+[connection signal="item_selected" from="demos_list" to="." method="_on_demos_list_item_selected"]
