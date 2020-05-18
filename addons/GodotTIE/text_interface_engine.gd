@@ -5,7 +5,6 @@
 # Intern initializations
 extends ReferenceRect # Extends from ReferenceFrame
 
-const _ARRAY_CHARS = [" ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~"]
 
 const STATE_WAITING = 0
 const STATE_OUTPUT = 1
@@ -275,8 +274,6 @@ func _physics_process(delta):
 			if(_blink_input_timer > _input_timer_limit):
 				_blink_input_timer -= _input_timer_limit
 				_blink_input()
-	
-	pass
 
 func _input(event):
 	if(event is InputEventKey and event.is_pressed() == true ):
@@ -309,10 +306,10 @@ func _input(event):
 						_delete_last_character()
 						i-=1
 				set_state(STATE_OUTPUT)
-			
-			elif(event.unicode >= 32 and event.unicode <= 126): # Add character
+
+			else: # Add character
 				if(INPUT_CHARACTERS_LIMIT < 0 or input.length() < INPUT_CHARACTERS_LIMIT):
-					_label_print(_ARRAY_CHARS[event.unicode-32])
+					_label_print(char(event.unicode))
 
 # Private
 func _clear_skipped_lines():
