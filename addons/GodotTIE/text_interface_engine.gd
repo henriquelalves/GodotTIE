@@ -49,6 +49,7 @@ export(bool) var PRINT_INPUT = true # If the input is going to be printed
 export(bool) var BLINKING_INPUT = true # If there is a _ blinking when input is appropriate
 export(String) var INPUT_PREFIX = "" # An input prefix text
 export(int) var INPUT_CHARACTERS_LIMIT = -1 # If -1, there'll be no limits in the number of characters
+export(bool) var ACCEPTING_INPUT = true # Whether input events are processed
 # Signals!
 signal input_enter(input) # When user finished an input
 signal input_changed(input) # When user is inputting something
@@ -144,6 +145,9 @@ func clear_skipped_lines(): # Deletes only the 'hidden' lines, if LOG_SKIPPED_LI
 
 func add_newline(): # Add a new line to the label text
 	_label_print("\n")
+
+func scroll_to_bottom():
+	_label.set_lines_skipped(_label.get_line_count()-_max_lines)
 
 func get_text(): # Get current text on Label
 	return _label.get_text()
@@ -337,8 +341,19 @@ func _process(delta):
 			if(_blink_input_timer > _input_timer_limit):
 				_blink_input_timer -= _input_timer_limit
 				_blink_input()
+		
+		if ACCEPTING_INPUT:
+			if(SCROLL_SKIPPED_LINES): # User is just scrolling the text
+				if(Input.is_action_just_pressed("ui_up")):
+					if(_label.get_lines_skipped() > 0):
+						_label.set_lines_skipped(_label.get_lines_skipped()-1)
+				elif (Input.is_action_just_pressed("ui_down")):
+					if(_label.get_lines_skipped() < _label.get_line_count()-_max_lines):
+						_label.set_lines_skipped(_label.get_lines_skipped()+1)
 
 func _input(event):
+	if not ACCEPTING_INPUT: return
+	
 	if(event is InputEventKey and event.is_pressed() == true ):
 		if(SCROLL_SKIPPED_LINES and event.scancode == KEY_UP or event.scancode == KEY_DOWN): # User is just scrolling the text
 			if(event.scancode == KEY_UP):
@@ -354,32 +369,44 @@ func _input(event):
 			if(BLINKING_INPUT): # Stop blinking line while inputing
 				_blink_input(true) 
 			
-			var input = _label.get_text().right(_input_index) # Get Input
-			input = input.replace("\n","")
-
+			var input = get_input()
+			
 			if(event.scancode == KEY_BACKSPACE): # Delete last character until line break
 				if (_label.text.length() > _input_index):
 					_delete_last_character(true)
-					input = _label.get_text().right(_input_index) # Get Input
-					input = input.replace("\n","")
+					input = get_input()
 					emit_signal("input_changed", input)
 			
 			elif(event.scancode == KEY_ENTER): # Finish input
-				emit_signal("input_enter", input)
-				if(!PRINT_INPUT): # Delete input
-					var i = _label.get_text().length() - _input_index
-					while(i > 0):
-						_delete_last_character()
-						i-=1
-				add_newline()
-				set_state(STATE_OUTPUT)
+				flush_input(input)
 
 			else: # Add character
 				if(INPUT_CHARACTERS_LIMIT < 0 or input.length() < INPUT_CHARACTERS_LIMIT):
 					_label_print(char(event.unicode))
-					input = _label.get_text().right(_input_index) # Get Input
-					input = input.replace("\n","")
+					input = get_input()
 					emit_signal("input_changed", input)
+
+func flush_input(input):
+	emit_signal("input_enter", input)
+	scroll_to_bottom()
+	if(!PRINT_INPUT): # Delete input
+		var i = _label.get_text().length() - _input_index
+		while(i > 0):
+			_delete_last_character()
+			i-=1
+	add_newline()
+	
+	set_state(STATE_OUTPUT)
+
+func get_input():
+	var input = _label.get_text().right(_input_index) # Get Input
+	input = input.replace("\n","")
+	return input
+
+func set_input(input):
+	_label.text = _label.text.left(_input_index)
+	_label.text += input
+	printt("input: ", input)
 
 # Private
 func _clear_skipped_lines():
